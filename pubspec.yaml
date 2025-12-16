@@ -1,0 +1,40 @@
+name: task_manager_app
+description: "A Task Management APP"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.8.1 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.2.1
+  pin_code_fields: ^8.0.1
+  image_picker: ^1.2.0
+  shared_preferences: ^2.5.3
+  date_time_format: ^2.0.1
+  flutter_launcher_icons: ^0.14.4
+  change_app_package_name: ^1.5.0
+  provider: ^6.1.5+1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+     - assets/images/
+
+
+flutter_launcher_icons:
+
+  android: "launcher_icon" # Android এর জন্য
+  ios: true                # iOS এর জন্য
+  image_path: "assets/images/fav_icon.png" # আপনার আইকন ফাইলের পাথ
+  min_sdk_android: 21 # Android এর সর্বনিম্ন SDK ভার্সন (ঐচ্ছিক)
