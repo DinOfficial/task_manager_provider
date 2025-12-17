@@ -28,7 +28,6 @@ class NewTaskListProvider extends ChangeNotifier {
       }
       _taskList = list;
 
-
       _errorMessage = null;
       isSuccess = true;
     } else {

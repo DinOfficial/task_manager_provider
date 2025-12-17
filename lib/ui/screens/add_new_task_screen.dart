@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import 'package:task_manager_app/data/services/network_caller.dart';
-import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/data/utils/validation.dart';
 import 'package:task_manager_app/ui/providers/add_new_task_provider.dart';
-import 'package:task_manager_app/ui/screens/main_bottom_nav_holder_screen.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
 import 'package:task_manager_app/ui/widgets/tm_app_bar.dart';
 import '../widgets/show_snackbar_message.dart';
+import 'main_bottom_nav_holder_screen.dart';
 
 class AddNewTaskScreen extends StatefulWidget {
   const AddNewTaskScreen({super.key});
@@ -21,7 +19,6 @@ class AddNewTaskScreen extends StatefulWidget {
 }
 
 class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
-  bool _isloading = false;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final TextEditingController _titleTEController = TextEditingController();
   final TextEditingController _descriptionTEController = TextEditingController();
@@ -89,12 +86,13 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     _addTask();
   }
 
-  Future<NetworkResponse?> _addTask() async {
-    final bool isSuccess = await context.watch<AddNewTaskProvider>().addTask(
+  Future<void> _addTask() async {
+    final addNewTaskProvider = context.read<AddNewTaskProvider>();
+    final bool isSuccess = await addNewTaskProvider.addTask(
       _titleTEController.text.trim(),
       _descriptionTEController.text.trim(),
     );
-
+    if (!mounted) return;
     if (isSuccess) {
       clearData();
       showSnackbarMessage(context, 'New task created successfully');
@@ -102,11 +100,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
     } else {
       showSnackbarMessage(
         context,
-        context.watch<AddNewTaskProvider>().errorMessage.toString(),
+        context.watch<AddNewTaskProvider>().errorMessage ?? "An unknown error occurred",
         true,
       );
     }
-    return null;
   }
 
   void clearData() {
