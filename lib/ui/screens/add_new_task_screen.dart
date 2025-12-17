@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/data/utils/validation.dart';
+import 'package:task_manager_app/ui/providers/add_new_task_provider.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_holder_screen.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
 import 'package:task_manager_app/ui/widgets/screen_background.dart';
@@ -33,7 +35,10 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
           padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
           children: [
             const SizedBox(height: 50),
-            Text('Add New Task', style: Theme.of(context).textTheme.titleLarge).animate().moveX(duration: 700.ms),
+            Text(
+              'Add New Task',
+              style: Theme.of(context).textTheme.titleLarge,
+            ).animate().moveX(duration: 700.ms),
             Form(
               key: _formkey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -54,15 +59,19 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                         AllValidation().formValidation(value, 'Enter task description'),
                   ).animate().moveX(duration: 700.ms),
                   const SizedBox(height: 8),
-                  Visibility(
-                    visible: !_isloading,
-                    replacement: CenteredCircularProgressIndicator().animate().moveX(
-                      duration: 700.ms,
-                    ),
-                    child: FilledButton(
-                      onPressed: _onNextScreen,
-                      child: Icon(Icons.arrow_circle_right_outlined, size: 30),
-                    ).animate().moveX(duration: 700.ms),
+                  Consumer<AddNewTaskProvider>(
+                    builder: (context, addNewTaskProvider, _) {
+                      return Visibility(
+                        visible: !addNewTaskProvider.getAddNewTaskInProgress,
+                        replacement: CenteredCircularProgressIndicator().animate().moveX(
+                          duration: 700.ms,
+                        ),
+                        child: FilledButton(
+                          onPressed: _onNextScreen,
+                          child: Icon(Icons.arrow_circle_right_outlined, size: 30),
+                        ).animate().moveX(duration: 700.ms),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -81,30 +90,27 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
   }
 
   Future<NetworkResponse?> _addTask() async {
-    _isloading = true;
-    setState(() {});
-
-    Map<String, dynamic> responseBody = {
-      "title": _titleTEController.text,
-      "description": _descriptionTEController.text,
-      "status": "New",
-    };
-
-    NetworkResponse response = await NetWorkCaller().postRequest(
-      Urls.createTask,
-      body: responseBody,
+    final bool isSuccess = await context.watch<AddNewTaskProvider>().addTask(
+      _titleTEController.text.trim(),
+      _descriptionTEController.text.trim(),
     );
 
-    _isloading = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      _titleTEController.clear();
-      _descriptionTEController.clear();
+    if (isSuccess) {
+      clearData();
       showSnackbarMessage(context, 'New task created successfully');
       Navigator.pushNamedAndRemoveUntil(context, MainBottomNavHolderScreen().name, (p) => false);
     } else {
-      showSnackbarMessage(context, response.errorMessage.toString(), true);
+      showSnackbarMessage(
+        context,
+        context.watch<AddNewTaskProvider>().errorMessage.toString(),
+        true,
+      );
     }
+    return null;
+  }
+
+  void clearData() {
+    _titleTEController.clear();
+    _descriptionTEController.clear();
   }
 }
