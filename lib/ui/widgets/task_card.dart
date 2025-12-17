@@ -3,6 +3,7 @@ import 'package:task_manager_app/data/models/task_list_model.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/ui/widgets/show_snackbar_message.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class TaskCard extends StatefulWidget {
   const TaskCard({
@@ -121,7 +122,7 @@ class _TaskCardState extends State<TaskCard> {
                 ),
               ],
             ),
-          );
+          ).animate().moveX(duration: 300.ms, );
         },
       );
     }
@@ -193,7 +194,7 @@ class _TaskCardState extends State<TaskCard> {
                 ),
               ],
             ),
-          );
+          ).animate().moveX(duration: 300.ms, );
         },
       );
     }
@@ -257,6 +258,6 @@ class _TaskCardState extends State<TaskCard> {
           ],
         ),
       ),
-    );
+    ).animate().moveX(duration: 700.ms, );
   }
 }

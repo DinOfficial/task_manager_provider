@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:task_manager_app/data/models/task_count_list_model.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
@@ -73,7 +74,7 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
                         style: textTheme.labelSmall?.copyWith(color: Colors.grey),
                       ),
                     ),
-                  );
+                  ).animate().slide(duration: 700.ms).fadeIn(duration: 700.ms);
                 },
               ),
             ),
