@@ -40,7 +40,6 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
               key: _formkey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
-                spacing: 16,
                 children: [
                   const SizedBox(height: 8),
                   TextFormField(
@@ -48,6 +47,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     decoration: const InputDecoration(hintText: 'Title'),
                     validator: (value) => AllValidation().formValidation(value, 'Enter task title'),
                   ).animate().moveX(duration: 700.ms),
+                  const SizedBox(height: 12,),
                   TextFormField(
                     maxLines: 5,
                     controller: _descriptionTEController,
@@ -55,7 +55,7 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
                     validator: (value) =>
                         AllValidation().formValidation(value, 'Enter task description'),
                   ).animate().moveX(duration: 700.ms),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Consumer<AddNewTaskProvider>(
                     builder: (context, addNewTaskProvider, _) {
                       return Visibility(

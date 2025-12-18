@@ -81,8 +81,8 @@ class _NewTaskListScreenState extends State<NewTaskListScreen> {
                       return TaskCard(
                         taskListModel: newTaskListProvider.taskList[index],
                         refreshList: () {
-                          newTaskListProvider.taskList;
-                          taskListCountProvider.taskCountList;
+                          newTaskListProvider.getTaskList();
+                          taskListCountProvider.getTaskCountList();
                         },
                       );
                     },
