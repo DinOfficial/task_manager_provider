@@ -4,22 +4,22 @@ import '../../data/services/network_caller.dart';
 import '../../data/utils/urls.dart';
 
 class CancelTaskListProvider extends ChangeNotifier {
-  bool _getTaskListInProgress = false;
+  bool _cancelTaskListInProgress = false;
   List<TaskListModel> _taskList = [];
   String? _errorMessage;
 
-  bool get getTaskListInProgress => _getTaskListInProgress;
+  bool get getCancelTaskListInProgress => _cancelTaskListInProgress;
 
   List<TaskListModel> get taskList => _taskList;
 
   String? get errorMessage => _errorMessage;
 
-  Future<bool> getTaskList() async {
+  Future<bool> getCancelTaskList() async {
     bool isSuccess = false;
-    _getTaskListInProgress = true;
+    _cancelTaskListInProgress = true;
     notifyListeners();
 
-    final NetworkResponse response = await NetWorkCaller().getRequest(Urls.newTaskList);
+    final NetworkResponse response = await NetWorkCaller().getRequest(Urls.cancelledTaskList);
 
     if (response.isSuccess) {
       List<TaskListModel> list = [];
@@ -34,7 +34,7 @@ class CancelTaskListProvider extends ChangeNotifier {
       _errorMessage = response.errorMessage;
     }
 
-    _getTaskListInProgress = false;
+    _cancelTaskListInProgress = false;
     notifyListeners();
     return isSuccess;
   }
