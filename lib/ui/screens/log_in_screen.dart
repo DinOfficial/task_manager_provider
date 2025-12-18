@@ -136,7 +136,7 @@ class _SignInScreenState extends State<SignInScreen> {
     if (isSuccess) {
       clearInputField();
       showSnackbarMessage(context, 'You are successfully login');
-      Navigator.pushReplacementNamed(context, MainBottomNavHolderScreen().name);
+      Navigator.pushNamedAndRemoveUntil(context, MainBottomNavHolderScreen().name, (p)=>false);
     } else {
       showSnackbarMessage(context, loginProvider.errorMessage.toString(), true);
     }
