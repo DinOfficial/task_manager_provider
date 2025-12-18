@@ -1,9 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager_app/data/models/user_model.dart';
-import 'package:task_manager_app/data/services/network_caller.dart';
-import 'package:task_manager_app/data/utils/auth_controller.dart';
-import 'package:task_manager_app/data/utils/urls.dart';
+import 'package:provider/provider.dart';
+import 'package:task_manager_app/ui/providers/login_provider.dart';
 import 'package:task_manager_app/ui/screens/forgot_password_email_screen.dart';
 import 'package:task_manager_app/ui/screens/main_bottom_nav_holder_screen.dart';
 import 'package:task_manager_app/ui/screens/sign_up_screen.dart';
@@ -13,7 +11,6 @@ import 'package:task_manager_app/ui/widgets/show_snackbar_message.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
-
   final String name = '/sign-in-screen';
 
   @override
@@ -21,22 +18,13 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  bool _isPasswordVisible = false;
-
-  void _togglePassword() {
-    setState(() {
-      _isPasswordVisible = !_isPasswordVisible;
-    });
-  }
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
 
-  bool _signInProgress = false;
-
   @override
   Widget build(BuildContext context) {
+    final loginProvider = context.read<LoginProvider>();
     return Scaffold(
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
@@ -49,39 +37,32 @@ class _SignInScreenState extends State<SignInScreen> {
               spacing: 10,
               children: [
                 const SizedBox(height: 100),
-                Text(
-                  'Get Started With',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text('Get Started With', style: Theme.of(context).textTheme.titleLarge),
                 TextFormField(
                   controller: _emailTEController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(hintText: 'Email'),
-                  validator: (String? value) => (value?.isEmpty ?? true)
-                      ? 'Please enter valid email'
-                      : null,
+                  validator: (String? value) =>
+                      (value?.isEmpty ?? true) ? 'Please enter valid email' : null,
                 ),
                 TextFormField(
                   controller: _passwordTEController,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  obscureText: !_isPasswordVisible,
+                  obscureText: !loginProvider.getIsPasswordShow,
                   decoration: InputDecoration(
                     hintText: 'Password',
                     suffixIcon: IconButton(
-                      onPressed: _togglePassword,
+                      onPressed: loginProvider.togglePassword,
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        loginProvider.getIsPasswordShow ? Icons.visibility : Icons.visibility_off,
                       ),
                     ),
                   ),
-                  validator: (String? value) => (value?.isEmpty ?? true)
-                      ? 'Please enter your password'
-                      : null,
+                  validator: (String? value) =>
+                      (value?.isEmpty ?? true) ? 'Please enter your password' : null,
                 ),
                 Visibility(
-                  visible: !_signInProgress,
+                  visible: !loginProvider.getLoginInProgress,
                   replacement: CenteredCircularProgressIndicator(),
                   child: FilledButton(
                     onPressed: _onNextScreen,
@@ -108,8 +89,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             TextSpan(
                               text: 'Sign Up',
                               style: TextStyle(color: Colors.green),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = _onSignUp,
+                              recognizer: TapGestureRecognizer()..onTap = _onSignUp,
                             ),
                           ],
                         ),
@@ -140,38 +120,27 @@ class _SignInScreenState extends State<SignInScreen> {
     _onTapSignIn();
   }
 
-  void _onTapSignIn() async {
-    _signInProgress = true;
-    setState(() {});
-
-    Map<String, dynamic> responseBody = {
-      "email": _emailTEController.text.trim(),
-      "password": _passwordTEController.text,
-    };
-
-    NetworkResponse response = await NetWorkCaller().postRequest(
-      Urls.signIn,
-      body: responseBody,
+  Future<void> _onTapSignIn() async {
+    final loginProvider = context.read<LoginProvider>();
+    bool isSuccess = await loginProvider.signIn(
+      _emailTEController.text.trim(),
+      _passwordTEController.text,
     );
 
-    _signInProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
-      UserModel userModel = await UserModel.fromJson(response.body['data']);
-      String accessToken = response.body['token'];
-      await AuthController.saveUserToken(accessToken, userModel);
+    if (isSuccess) {
       clearInputField();
       showSnackbarMessage(context, 'You are successfully login');
       Navigator.pushReplacementNamed(context, MainBottomNavHolderScreen().name);
     } else {
-      showSnackbarMessage(context, response.errorMessage.toString(), true);
+      showSnackbarMessage(context, loginProvider.errorMessage.toString(), true);
     }
   }
-  void clearInputField(){
+
+  void clearInputField() {
     _emailTEController.clear();
     _passwordTEController.clear();
   }
+
   @override
   void dispose() {
     _emailTEController.dispose();
