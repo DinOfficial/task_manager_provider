@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_manager_app/ui/providers/add_new_task_provider.dart';
 import 'package:task_manager_app/ui/providers/cancel_task_list_provider.dart';
 import 'package:task_manager_app/ui/providers/new_task_list_provider.dart';
+import 'package:task_manager_app/ui/providers/progress_task_list_provider.dart';
 import 'package:task_manager_app/ui/providers/task_list_count_provider.dart';
 import 'package:task_manager_app/ui/screens/add_new_task_screen.dart';
 import 'package:task_manager_app/ui/screens/splash_screen.dart';
@@ -28,6 +29,7 @@ class TaskManagerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AddNewTaskProvider()),
         ChangeNotifierProvider(create: (_) => TaskListCountProvider()),
         ChangeNotifierProvider(create: (_) => CancelTaskListProvider()),
+        ChangeNotifierProvider(create: (_) => ProgressTaskListProvider()),
       ],
       child: MaterialApp(
         navigatorKey: navigatorKay,
