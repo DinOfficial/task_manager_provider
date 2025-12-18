@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:task_manager_app/data/services/network_caller.dart';
 import 'package:task_manager_app/data/utils/urls.dart';
 import 'package:task_manager_app/data/utils/validation.dart';
+import 'package:task_manager_app/ui/providers/email_verify_provider.dart';
 import 'package:task_manager_app/ui/screens/log_in_screen.dart';
 import 'package:task_manager_app/ui/screens/otp_verify_screen.dart';
 import 'package:task_manager_app/ui/widgets/centered_circular_progress_indicator.dart';
@@ -105,16 +107,12 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
   }
 
   Future<void> _emailVerify() async {
-    final email = _emailController.text;
-    _emailVerifyInProgress = true;
-    setState(() {});
-    final NetworkResponse response = await NetWorkCaller().getRequest(
-      Urls.emailVerify(email.trim()),
-    );
+    final emailVerify = context.read<EmailVerifyProvider>();
+    final isSuccess = await emailVerify.emailVerify(_emailController.text.trim());
 
-    if (response.isSuccess) {
-      showSnackbarMessage(context, response.body['data']);
-
+    if (isSuccess) {
+      showSnackbarMessage(context, 'A 6 digit OTP code sent to your email');
+      // TODO: Next Day From Here
       if (response.body['status'] == 'success') {
         Navigator.pushNamed(context, OtpVerifyScreen().name, arguments: email);
       }

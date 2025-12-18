@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:task_manager_app/ui/providers/add_new_task_provider.dart';
 import 'package:task_manager_app/ui/providers/cancel_task_list_provider.dart';
 import 'package:task_manager_app/ui/providers/complete_task_list_provider.dart';
+import 'package:task_manager_app/ui/providers/email_verify_provider.dart';
 import 'package:task_manager_app/ui/providers/login_provider.dart';
 import 'package:task_manager_app/ui/providers/new_task_list_provider.dart';
 import 'package:task_manager_app/ui/providers/progress_task_list_provider.dart';
@@ -30,6 +31,7 @@ class TaskManagerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => LoginProvider()),
         ChangeNotifierProvider(create: (_) => SignUpProvider()),
+        ChangeNotifierProvider(create: (_) => EmailVerifyProvider()),
         ChangeNotifierProvider(create: (_) => NewTaskListProvider()),
         ChangeNotifierProvider(create: (_) => AddNewTaskProvider()),
         ChangeNotifierProvider(create: (_) => TaskListCountProvider()),
