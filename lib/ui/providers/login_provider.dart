@@ -13,9 +13,9 @@ class LoginProvider extends ChangeNotifier {
 
   String? get errorMessage => _errorMessage;
 
-  bool get getIsPasswordShow => _isPasswordVisible;
+  bool get isPasswordVisible => _isPasswordVisible;
 
-  get togglePassword {
+  void togglePassword() {
     _isPasswordVisible = !_isPasswordVisible;
     notifyListeners();
   }
