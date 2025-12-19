@@ -13,16 +13,13 @@ import 'package:task_manager_app/ui/widgets/show_snackbar_message.dart';
 
 class ForgotPasswordEmailScreen extends StatefulWidget {
   const ForgotPasswordEmailScreen({super.key});
-
   final String name = '/forgot-password-email';
 
   @override
-  State<ForgotPasswordEmailScreen> createState() =>
-      _ForgotPasswordEmailScreenState();
+  State<ForgotPasswordEmailScreen> createState() => _ForgotPasswordEmailScreenState();
 }
 
 class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
-  bool _emailVerifyInProgress = false;
   final TextEditingController _emailController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -40,10 +37,7 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 100),
-                Text(
-                  'Your Email Address',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text('Your Email Address', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8),
                 Text(
                   'A 6 digit verification code will be sent to this email address',
@@ -53,20 +47,22 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
                 TextFormField(
                   controller: _emailController,
                   decoration: InputDecoration(hintText: 'Email'),
-                  validator: (value) => AllValidation().formValidation(
-                    value,
-                    'Please input valid email',
-                  ),
+                  validator: (value) =>
+                      AllValidation().formValidation(value, 'Please input valid email'),
                 ),
                 const SizedBox(height: 12),
-                Visibility(
-                  visible: !_emailVerifyInProgress,
-                  replacement: CenteredCircularProgressIndicator(),
-                  child: FilledButton(
-                    onPressed: _moveNextScreen,
-                    style: FilledButton.styleFrom(),
-                    child: Icon(Icons.arrow_circle_right_outlined, size: 30),
-                  ),
+                Consumer<EmailVerifyProvider>(
+                  builder: (context, emailVerifyProvider, _) {
+                    return Visibility(
+                      visible: !emailVerifyProvider.getEmailVerifyInProgress,
+                      replacement: CenteredCircularProgressIndicator(),
+                      child: FilledButton(
+                        onPressed: _moveNextScreen,
+                        style: FilledButton.styleFrom(),
+                        child: Icon(Icons.arrow_circle_right_outlined, size: 30),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 20),
                 Center(
@@ -93,11 +89,7 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
   }
 
   void _signIn() {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      SignInScreen().name,
-      (p) => false,
-    );
+    Navigator.pushNamedAndRemoveUntil(context, SignInScreen().name, (p) => false);
   }
 
   void _moveNextScreen() {
@@ -107,20 +99,17 @@ class _ForgotPasswordEmailScreenState extends State<ForgotPasswordEmailScreen> {
   }
 
   Future<void> _emailVerify() async {
+    final email = _emailController.text.trim();
     final emailVerify = context.read<EmailVerifyProvider>();
     final isSuccess = await emailVerify.emailVerify(_emailController.text.trim());
 
     if (isSuccess) {
       showSnackbarMessage(context, 'A 6 digit OTP code sent to your email');
-      // TODO: Next Day From Here
-      if (response.body['status'] == 'success') {
+      if (mounted) {
         Navigator.pushNamed(context, OtpVerifyScreen().name, arguments: email);
       }
     } else {
-      showSnackbarMessage(context, response.body['data'], true);
+      showSnackbarMessage(context, emailVerify.errorMessage.toString(), true);
     }
-
-    _emailVerifyInProgress = false;
-    setState(() {});
   }
 }
